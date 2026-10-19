@@ -1,56 +1,136 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
+from pydantic import BaseModel, Field
 
-# 1. Instanciamos la aplicación FastAPI
+# ==========================================
+# 1. Esquemas de datos con Pydantic
+# ==========================================
+
+# Esquema de entrada (Validación estricta)
+class Buscador(BaseModel):
+    titulo: str = Field(min_length=2, max_length=50, description="titulo de la película/serie")
+    anio: int = Field(ge=1980, le=2026, description="Año de la película/serie")
+    score: float = Field(gt=0, description="Valoración de la película/serie")
+    genero: str = Field(min_length=5, max_length=20, description="Género de la película/serie")
+    tipo: str = Field(description='Película o serie')
+    vista: bool = Field(default=False,description='¿Has visto la película/serie?')
+    
+
+# Esquema de respuesta tipado
+class ResultadoBusqueda(BaseModel):
+    titulo: str
+    anio: int
+    score: float
+    genero: str
+    tipo: str
+    vista: bool
+
+# ==========================================
+# 2. Servidor FastAPI, CORS y Estáticos
+# ==========================================
+
 app = FastAPI(
-    title="API de Introducción a la IA",
-    description="Servicio web para consultar el estado del sistema y realizar pruebas de endpoints",
+    title="CineAPI",
+    description="API para buscar una serie o película que el usuario quiere ver",
     version="1.0.0"
 )
 
-# 2. Definimos nuestro primer endpoint (Ruta raíz)
-@app.get("/home")
-def ruta_raiz():
-    """
-    Endpoint principal de bienvenida.
-    Devuelve un mensaje en formato JSON.
-    """
-    return {
-        "mensaje": "¡Bienvenido a la API de Inteligencia Artificial soy David!",
-        "version": "1.0.0",
-        "estado": "operativo"
-    }
+app.add_middleware(
+CORSMiddleware,
+allow_origins=["*"],
+allow_credentials=True,
+allow_methods=["*"],
+allow_headers=["*"],
+)
 
-# 3. Endpoint de comprobación de salud del servicio (Health Check)
-@app.get("/health")
-def estado_servicio():
-    return {
-        "estado": "OK",
-        "memoria_disponible": "85%",
-        "modelos_cargados": 0
-    }
+# Montamos la carpeta static para servir el código JavaScript y estilos
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
-@app.get("/modelos/{modelo_id}")
-def obtener_informacion_modelo(modelo_id: int):
-    """
-    Devuelve la información de un modelo según su identificador numérico.
-    """
-    catalogo = {
-        1: {"nombre": "Clasificador_Clientes", "algoritmo": "RandomForest", "precision": 0.92},
-        2: {"nombre": "Detector_Anomalias", "algoritmo": "IsolationForest", "precision": 0.88}
-    }
+# ==========================================
+# 3. Endpoints del servicio y Frontend
+# ==========================================
+
+catalogo=[
+    {
+        "titulo": 'Star Wars',
+        "año": 2006,
+        "genero": 'Acción',
+        "score": 9.2,
+        "tipo": 'Película',
+        "vista": False
+    },
+    {
+        "titulo": 'Crimen en el paraíso',
+        "año": 2011,
+        "genero": 'Misterio/Drama',
+        "score": 9.6,
+        "tipo": 'Serie',
+        "vista": False
+    },
+    {
+        "titulo": 'Avatar 3: Fuego y Cenizas',
+        "año": 2025,
+        "genero": 'Acción/Aventuras',
+        "score": 8.4,
+        "tipo": 'Película',
+        "vista": False
+    },
+    {
+        "titulo": 'Lioness',
+        "año": 2023,
+        "genero": 'Acción/Drama/Suspenso/Thriller',
+        "score": 8.4,
+        "tipo": 'Serie',
+        "vista": False
+    },
+    {
+        "titulo": 'Space Jam',
+        "año": 1996,
+        "genero": 'Animación/Comedia/Deportes',
+        "score": 7.7,
+        "tipo": 'Película',
+        "vista": False
+    },
+]
+
+# Ruta raíz: sirve la interfaz visual del simulador
+@app.get("/", response_class=FileResponse)
+def inicio():
+    return FileResponse("index.html")
+
+
+@app.get("/peliseries")
+def obtener_peliseries():
     
-    if modelo_id in catalogo:
-        return {"encontrado": True, "modelo": catalogo[modelo_id]}
-    
-    return {"encontrado": False, "mensaje": "Modelo no disponible en el catálogo"}
+    return catalogo
 
-@app.get("/predicciones/")
-def consultar_historial(limite: int = 10, categoria: str = "general"):
+@app.get("/info")
+def obtener_info(titulo:str):
+    for pelicula in catalogo:
+        if pelicula["titulo"].lower() == titulo.lower():
+            return {
+                "titulo": pelicula["titulo"],
+                "año": pelicula["año"],
+                "genero": pelicula["genero"],
+                "tipo": pelicula["tipo"],
+                "score": pelicula["score"]
+            }
+
+@app.post("/buscar_peliserie", response_model=ResultadoBusqueda)
+def buscar_peliserie(busqueda: Buscador):
     """
-    Simula la consulta de predicciones con paginación y filtro opcional.
+    Busca una película o serie que quieras ver.
     """
+
+
     return {
-        "limite_solicitado": limite,
-        "categoria_filtro": categoria,
-        "total_registros": 45
+        "titulo": busqueda.titulo,
+        "genero": busqueda.genero,
+        "año": busqueda.anio,
+        "tipo": busqueda.tipo,
+        "vista": busqueda.vista,
+        "score": busqueda.score
     }
+
