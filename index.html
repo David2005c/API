@@ -1,0 +1,168 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>CineAPI | Tu catálogo audiovisual</title>
+
+    <link rel="stylesheet" href="/static/style.css">
+    <script src="/static/app.js" defer></script>
+</head>
+<body>
+    <header class="navbar">
+        <a href="/" class="logo">
+            <span class="logo-icon">C</span>
+            <span>Cine<span class="accent">API</span></span>
+        </a>
+
+        <nav>
+            <a href="#inicio">Inicio</a>
+            <a href="#catalogo">Catálogo</a>
+            <a href="#buscar">Buscar</a>
+        </nav>
+
+        <span class="api-status">
+            <span class="status-dot"></span>
+            API
+        </span>
+    </header>
+
+    <main>
+        <section class="hero" id="inicio">
+            <div class="hero-content">
+                <span class="eyebrow">TU UNIVERSO AUDIOVISUAL</span>
+
+                <h1>Historias que<br>
+                    <span class="accent">merecen ser vistas.</span>
+                </h1>
+
+                <p>
+                    Explora películas y series, descubre sus puntuaciones
+                    y encuentra tu próximo título favorito.
+                </p>
+
+                <a href="#catalogo" class="button button-primary">
+                    Explorar catálogo <span>→</span>
+                </a>
+            </div>
+
+            <div class="hero-decoration" aria-hidden="true">
+                <div class="film-symbol">▶</div>
+                <span>CINE · SERIES · HISTORIAS</span>
+            </div>
+        </section>
+
+        <section class="search-section" id="buscar">
+            <div class="section-heading">
+                <div>
+                    <span class="eyebrow">ENCUENTRA TU PRÓXIMA HISTORIA</span>
+                    <h2>¿Qué quieres ver?</h2>
+                </div>
+            </div>
+
+            <form id="search-form" class="search-form">
+                <label class="search-input-wrapper">
+                    <span aria-hidden="true">⌕</span>
+                    <input
+                        type="text"
+                        id="search-input"
+                        placeholder="Escribe el título de una película o serie..."
+                        minlength="2"
+                        maxlength="50"
+                        required
+                    >
+                </label>
+
+                <button type="submit" class="button button-primary">
+                    Buscar
+                </button>
+            </form>
+
+            <div id="search-result" aria-live="polite"></div>
+        </section>
+
+        <section class="catalog-section" id="catalogo">
+            <div class="section-heading catalog-heading">
+                <div>
+                    <span class="eyebrow">DESCUBRE TU CATÁLOGO</span>
+                    <h2>Explora los títulos</h2>
+                    <p class="muted">Películas y series en un solo lugar.</p>
+                </div>
+
+                <button id="reload-button" class="button button-secondary">
+                    ↻ Actualizar
+                </button>
+            </div>
+
+            <div class="catalog-controls">
+                <div class="filter-group" aria-label="Filtrar catálogo">
+                    <button class="filter-button active" data-filter="Todos">
+                        Todos
+                    </button>
+                    <button class="filter-button" data-filter="Película">
+                        Películas
+                    </button>
+                    <button class="filter-button" data-filter="Serie">
+                        Series
+                    </button>
+                </div>
+
+                <label class="sort-control">
+                    Ordenar por
+                    <select id="sort-select">
+                        <option value="default">Orden original</option>
+                        <option value="score">Mayor puntuación</option>
+                        <option value="year">Año más reciente</option>
+                        <option value="title">Título A–Z</option>
+                    </select>
+                </label>
+            </div>
+
+            <div id="catalog-message" class="message" aria-live="polite">
+                Cargando catálogo...
+            </div>
+
+            <div id="catalog-grid" class="catalog-grid"></div>
+        </section>
+    </main>
+
+    <footer>
+        <a href="/" class="logo footer-logo">
+            <span class="logo-icon">C</span>
+            <span>Cine<span class="accent">API</span></span>
+        </a>
+
+        <p>Tu catálogo audiovisual, impulsado por FastAPI.</p>
+        <span class="footer-version">CINEAPI · V1.0</span>
+    </footer>
+
+    <dialog id="details-dialog" class="details-dialog">
+        <button
+            id="close-dialog"
+            class="close-dialog"
+            type="button"
+            aria-label="Cerrar detalles"
+        >×</button>
+
+        <div id="details-content"></div>
+    </dialog>
+
+    <div id="details-modal" class="modal-overlay" hidden>
+        <div class="modal-content">
+            <button id="close-modal" class="close-modal" type="button">
+                &times;
+            </button>
+
+            <h2 id="modal-title">Ficha técnica</h2>
+            <p><strong>Año:</strong> <span id="modal-year"></span></p>
+            <p><strong>Género:</strong> <span id="modal-genre"></span></p>
+            <p><strong>Puntuación:</strong> <span id="modal-score"></span></p>
+            <p><strong>Tipo:</strong> <span id="modal-type"></span></p>
+            <p><strong>Vista:</strong> <span id="modal-seen"></span></p>
+        </div>
+    </div>
+
+</body>
+</html>
