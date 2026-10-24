@@ -153,12 +153,12 @@ def probabilidad_gustar(busqueda: Probabilidad):
         ), None
     )
 
-    puntos=(pelicula.score*10)/50
+    puntos=(pelicula.score/10)*50
 
     explicacion=[]
 
     explicacion.append(
-        f"Puntuación:{pelicula.score}/10"
+        f"Puntuación: {pelicula.score}/10"
     )
 
     if busqueda.genero_fav:
