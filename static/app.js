@@ -327,9 +327,6 @@ detailsDialog.addEventListener("click", event => {
     }
 });
 
-// Cargar el catálogo al abrir la página.
-cargarCatalogo();
-
 async function consultarProbabilidad(titulo) {
     const genero = document.getElementById("favorite-genre").value;
     const tipo = document.getElementById("preferred-type").value;
@@ -382,3 +379,7 @@ async function consultarProbabilidad(titulo) {
         boton.disabled = false;
     }
 }
+
+// Cargar el catálogo al abrir la página.
+cargarCatalogo();
+
