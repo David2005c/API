@@ -690,3 +690,50 @@ footer p {
         align-items: start;
     }
 }
+
+.preference-section {
+    margin-top: 24px;
+    padding-top: 20px;
+    border-top: 1px solid #2b3040;
+}
+
+.preference-section h3 {
+    margin-bottom: 16px;
+}
+
+.preference-section label {
+    display: block;
+    margin: 12px 0 6px;
+    color: var(--text);
+}
+
+.preference-section select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #2b3040;
+    border-radius: 8px;
+    background: #151821;
+    color: var(--text);
+}
+
+#calculate-score {
+    margin-top: 16px;
+    padding: 10px 16px;
+    border: 0;
+    border-radius: 8px;
+    background: var(--accent);
+    color: white;
+    cursor: pointer;
+}
+
+#calculate-score:disabled {
+    opacity: 0.6;
+    cursor: wait;
+}
+
+.probability-value {
+    margin: 16px 0 4px;
+    font-size: 2rem;
+    font-weight: bold;
+    color: #36a875;
+}
