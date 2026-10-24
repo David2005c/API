@@ -182,6 +182,8 @@ def probabilidad_gustar(busqueda: Probabilidad):
 
         if coincide_tipo:
 
+            puntos+=15
+
             explicacion.append("Es tu tipo preferido")
         else:
             explicacion.append("No es tu tipo preferido") 
