@@ -298,9 +298,8 @@ function mostrarDetalles(pelicula) {
         .addEventListener("click", () => {
             consultarProbabilidad(pelicula.titulo);
         });
-}
 
-async function consultarProbabilidad(titulo) {
+    async function consultarProbabilidad(titulo) {
     const genero = document.getElementById("favorite-genre").value;
     const tipo = document.getElementById("preferred-type").value;
     const resultado = document.getElementById("probability-result");
@@ -352,6 +351,9 @@ async function consultarProbabilidad(titulo) {
         boton.disabled = false;
     }
 }
+}
+
+
 
 // Eventos de búsqueda.
 searchForm.addEventListener("submit", event => {
