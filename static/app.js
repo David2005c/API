@@ -299,7 +299,9 @@ function mostrarDetalles(pelicula) {
             consultarProbabilidad(pelicula.titulo);
         });
 
-    async function consultarProbabilidad(titulo) {
+}
+
+async function consultarProbabilidad(titulo) {
     const genero = document.getElementById("favorite-genre").value;
     const tipo = document.getElementById("preferred-type").value;
     const resultado = document.getElementById("probability-result");
@@ -334,7 +336,7 @@ function mostrarDetalles(pelicula) {
 
         resultado.innerHTML = `
             <p class="probability-value">
-                ${datos.probabilidad_estimada} %
+                ${datos.probabilidad} %
             </p>
             <p>Probabilidad estimada de que te guste</p>
             <ul>
@@ -351,9 +353,6 @@ function mostrarDetalles(pelicula) {
         boton.disabled = false;
     }
 }
-}
-
-
 
 // Eventos de búsqueda.
 searchForm.addEventListener("submit", event => {

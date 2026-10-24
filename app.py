@@ -142,18 +142,18 @@ def buscar_peliserie(busqueda: Buscador):
 
 # 3. Endpoint para calcular la probabilidad de que al usuario le gusta una película/serie
 
-@app.post("/probabilidad", response_model=Probabilidad)
+@app.post("/probabilidad")
 def probabilidad_gustar(busqueda: Probabilidad):
 
     pelicula=next(
         (
             peli for peli in catalogo
-            if peli.titulo.lower==busqueda.titulo.lower
+            if peli.titulo.lower()==busqueda.titulo.lower()
 
-        )
-    ), None
+        ), None
+    )
 
-    puntos=(pelicula*10)/50
+    puntos=(pelicula.score*10)/50
 
     explicacion=[]
 
@@ -163,7 +163,7 @@ def probabilidad_gustar(busqueda: Probabilidad):
 
     if busqueda.genero_fav:
         coincide_genero=(
-            busqueda.genero_fav.lower() in pelicula.genero.lower
+            busqueda.genero_fav.lower() in pelicula.genero.lower()
         )
 
     if coincide_genero:
@@ -175,8 +175,14 @@ def probabilidad_gustar(busqueda: Probabilidad):
         explicacion.append("No es tu género favorito")  
 
     if busqueda.tipo_pref:
-        
-        puntos +=15
+
+        coincide_tipo = (
+            pelicula.tipo == busqueda.tipo_pref
+        )
+
+        if coincide_tipo:
+
+            puntos+=15
 
         explicacion.append("Es tu tipo preferido")
     else:
@@ -207,4 +213,3 @@ def estado_servicio():
         "modelos_cargados": 1
     }
 
-# http://192.168.1.16:8000
