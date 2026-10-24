@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
+from typing import Literal
 from pydantic import BaseModel, Field
 
 # ==========================================
@@ -26,6 +27,11 @@ class ResultadoBusqueda(BaseModel):
     genero: str = Field(min_length=5, max_length=50, description="Género de la película/serie")
     tipo: str = Field(description='Película o serie')
     vista: bool = Field(default=False, description='¿Has visto la película/serie?')
+
+class Probabilidad(BaseModel):
+    titulo: str = Field(min_length=2, max_length=50)
+    genero_fav: str | None = None
+    tipo_pref : Literal['Película','Serie'] | None = None
 
 # ==========================================
 # 2. Servidor FastAPI, CORS y Estáticos
@@ -118,31 +124,6 @@ def obtener_peliseries():
     
     return catalogo
 
-# @app.get("/info", response_model=ResultadoBusqueda)
-# def obtener_info(titulo:str):
-
-#     for pelicula in catalogo:
-#         if pelicula.titulo.lower() == titulo.lower():
-#             return {
-#                 "titulo": pelicula.titulo,
-#                 "anio": pelicula.anio,
-#                 "genero": pelicula.genero,
-#                 "tipo": pelicula.tipo,
-#                 "score": pelicula.score
-#             }
-
-# @app.get('/catalogo', response_model=ResultadoBusqueda)
-# def añadir_peliserie(busqueda: Buscador):
-
-#     for pelicula in catalogo:
-#         catalogo.append(
-#             titulo=pelicula.titulo,
-#             anio=pelicula.anio,
-#             genero=pelicula.genero,
-#             tipo=pelicula.tipo,
-#             vista=pelicula.vista
-#         )
-
 # 2. Endpoint para una bucar una película/serie en el catálogo
 @app.post("/buscar_peliserie", response_model=ResultadoBusqueda)
 def buscar_peliserie(busqueda: Buscador):
@@ -159,7 +140,65 @@ def buscar_peliserie(busqueda: Buscador):
                 "score": pelicula.score
             }
 
-# 3. Endpoint de comprobación de salud del servicio (Health Check)
+# 3. Endpoint para calcular la probabilidad de que al usuario le gusta una película/serie
+
+@app.post("/probabilidad")
+def probabilidad_gustar(busqueda: Probabilidad):
+
+    pelicula=next(
+        (
+            peli for peli in catalogo
+            if peli.titulo.lower==busqueda.titulo.lower
+
+        )
+    ), None
+
+    puntos=(pelicula*10)/50
+
+    explicacion=[]
+
+    explicacion.append(
+        f"Puntuación:{pelicula.score}/10"
+    )
+
+    if busqueda.genero_fav:
+        coincide_genero=(
+            busqueda.genero_fav.lower() in pelicula.genero.lower
+        )
+
+    if coincide_genero:
+
+        puntos +=35
+
+        explicacion.append("Es tu género favorito")
+    else:
+        explicacion.append("No es tu género favorito")  
+
+    if busqueda.tipo_pref:
+        
+        puntos +=15
+
+        explicacion.append("Es tu tipo preferido")
+    else:
+        explicacion.append("No es tu tipo preferido") 
+
+    maximo=50
+
+    if busqueda.genero_fav:
+        maximo+=35
+
+    if busqueda.tipo_pref:
+        maximo+=15
+
+    porcentaje=round((puntos/maximo)*100,1)
+
+    return{
+        'titulo':busqueda.titulo,
+        'probabilidad':porcentaje,
+        'explicacion':explicacion
+    }
+
+# 4. Endpoint de comprobación de salud del servicio (Health Check)
 @app.get("/check")
 def estado_servicio():
     return {

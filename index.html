@@ -147,6 +147,33 @@
         >×</button>
 
         <div id="details-content"></div>
+        <div class="preference-section">
+            <h3>¿Crees que te gustará?</h3>
+
+            <label for="favorite-genre">Tu género favorito</label>
+            <select id="favorite-genre">
+                <option value="">Cualquiera</option>
+                <option value="Acción">Acción</option>
+                <option value="Drama">Drama</option>
+                <option value="Comedia">Comedia</option>
+                <option value="Ciencia ficción">Ciencia ficción</option>
+                <option value="Misterio">Misterio</option>
+                <option value="Animación">Animación</option>
+            </select>
+
+            <label for="preferred-type">¿Qué prefieres ver?</label>
+            <select id="preferred-type">
+                <option value="">Ambos</option>
+                <option value="Película">Películas</option>
+                <option value="Serie">Series</option>
+            </select>
+
+            <button id="calculate-score" type="button">
+                Calcular probabilidad
+            </button>
+
+            <div id="probability-result" aria-live="polite"></div>
+        </div>
     </dialog>
 
     <div id="details-modal" class="modal-overlay" hidden>
