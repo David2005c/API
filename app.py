@@ -142,7 +142,7 @@ def buscar_peliserie(busqueda: Buscador):
 
 # 3. Endpoint para calcular la probabilidad de que al usuario le gusta una película/serie
 
-@app.post("/probabilidad")
+@app.post("/probabilidad", response_model=Probabilidad)
 def probabilidad_gustar(busqueda: Probabilidad):
 
     pelicula=next(
