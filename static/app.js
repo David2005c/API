@@ -319,8 +319,8 @@ async function consultarProbabilidad(titulo) {
                 },
                 body: JSON.stringify({
                     titulo: titulo,
-                    genero_favorito: genero || null,
-                    tipo_preferido: tipo || null
+                    genero_fav: genero || null,
+                    tipo_pref: tipo || null
                 })
             }
         );
