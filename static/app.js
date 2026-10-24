@@ -300,6 +300,59 @@ function mostrarDetalles(pelicula) {
         });
 }
 
+async function consultarProbabilidad(titulo) {
+    const genero = document.getElementById("favorite-genre").value;
+    const tipo = document.getElementById("preferred-type").value;
+    const resultado = document.getElementById("probability-result");
+    const boton = document.getElementById("calculate-score");
+
+    resultado.textContent = "Calculando...";
+    boton.disabled = true;
+
+    try {
+        const respuesta = await fetch(
+            `${API_URL}/probabilidad`,
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    titulo: titulo,
+                    genero_favorito: genero || null,
+                    tipo_preferido: tipo || null
+                })
+            }
+        );
+
+        const datos = await respuesta.json();
+
+        if (!respuesta.ok) {
+            throw new Error(
+                datos.detail || "No se pudo calcular el score."
+            );
+        }
+
+        resultado.innerHTML = `
+            <p class="probability-value">
+                ${datos.probabilidad_estimada} %
+            </p>
+            <p>Probabilidad estimada de que te guste</p>
+            <ul>
+                ${datos.explicacion.map(
+                    texto => `<li>${escaparHTML(texto)}</li>`
+                ).join("")}
+            </ul>
+        `;
+
+    } catch (error) {
+        resultado.textContent = error.message;
+        console.error(error);
+    } finally {
+        boton.disabled = false;
+    }
+}
+
 // Eventos de búsqueda.
 searchForm.addEventListener("submit", event => {
     event.preventDefault();
@@ -361,58 +414,7 @@ detailsDialog.addEventListener("click", event => {
     }
 });
 
-async function consultarProbabilidad(titulo) {
-    const genero = document.getElementById("favorite-genre").value;
-    const tipo = document.getElementById("preferred-type").value;
-    const resultado = document.getElementById("probability-result");
-    const boton = document.getElementById("calculate-score");
 
-    resultado.textContent = "Calculando...";
-    boton.disabled = true;
-
-    try {
-        const respuesta = await fetch(
-            `${API_URL}/probabilidad_gusto`,
-            {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    titulo: titulo,
-                    genero_favorito: genero || null,
-                    tipo_preferido: tipo || null
-                })
-            }
-        );
-
-        const datos = await respuesta.json();
-
-        if (!respuesta.ok) {
-            throw new Error(
-                datos.detail || "No se pudo calcular el score."
-            );
-        }
-
-        resultado.innerHTML = `
-            <p class="probability-value">
-                ${datos.probabilidad_estimada} %
-            </p>
-            <p>Probabilidad estimada de que te guste</p>
-            <ul>
-                ${datos.explicacion.map(
-                    texto => `<li>${escaparHTML(texto)}</li>`
-                ).join("")}
-            </ul>
-        `;
-
-    } catch (error) {
-        resultado.textContent = error.message;
-        console.error(error);
-    } finally {
-        boton.disabled = false;
-    }
-}
 
 // Cargar el catálogo al abrir la página.
 cargarCatalogo();
